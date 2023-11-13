@@ -29,7 +29,7 @@ class LexicalProcessor:
                 case LexemProcessorStates.Idle:
                     if self.__is_empty_or_next_line(input = self.__char):
                         self.__get_next_char()
-                    
+        
                     elif self.__char.isalpha():
                         self.__clear_buffer()
                         self.__add_to_buffer(input = self.__char)
@@ -67,15 +67,15 @@ class LexicalProcessor:
                         search_types = self.search_in_types_dictionary()
 
                         if search_lexem[0] != -1:
-                            self.__add_lexem(LexemTypes.Identifier, search_lexem[0], search_lexem[1])
+                            self.__add_lexem(ltype = LexemTypes.Identifier, lex = search_lexem[0], value = search_lexem[1], description = self.__buffer)
                             self.__clear_buffer()
 
                         elif search_types[0] != -1:
-                            self.__add_lexem(LexemTypes.DataType, search_types[0], search_types[1])
+                            self.__add_lexem(ltype = LexemTypes.DataType, lex = search_types[0], value = search_types[1], description=self.__buffer)
                             self.__clear_buffer()
 
                         else:
-                            is_variable = self.__buffer in self.__variables_table
+                            is_variable = self.__buffer in [var.name for var in self.__variables_table]
 
                             if not is_variable:
                                 variable_type = self.__lexems[-1]
@@ -84,12 +84,13 @@ class LexicalProcessor:
                                     self.__error = f"[ERROR] Отсутствует тип переменной {self.__buffer}. Остановка произошла на символе №{self.__pointer}."
                                     continue
 
-                                self.__variables_table.append(Variable(vid = len(self.__variables_table), data_type = variable_type.value, name = self.__buffer))
-                                self.__add_lexem(LexemTypes.Variable, len(self.__variables_table) - 1, f"variable <{self.__buffer}> of type <{variable_type.type}>")
+                                self.__variables_table.append(Variable(vid = len(self.__variables_table), data_type = variable_type.lex, name = self.__buffer))
+                                self.__add_lexem(ltype = LexemTypes.Variable, lex = len(self.__variables_table) - 1, value = self.__buffer, description = f"variable <{self.__buffer}> of type <{variable_type.value}>")
                                 self.__clear_buffer()
                             
                             else:
-                                self.__add_lexem(LexemTypes.Variable, self.__variables_table.index(self.__buffer), f"variable <{self.__buffer}>")
+                                variables_name_table: str = [var.name for var in self.__variables_table]
+                                self.__add_lexem(ltype = LexemTypes.Variable, lex = variables_name_table.index(self.__buffer), value = self.__buffer, description =f"variable <{self.__buffer}>")
                                 self.__clear_buffer()
 
                         self.__state = LexemProcessorStates.Idle
@@ -113,11 +114,11 @@ class LexicalProcessor:
 
                     else:
                         if self.__is_float:
-                            self.__add_lexem(LexemTypes.Constant, float(self.__buffer), f"float with value = {self.__buffer}")
+                            self.__add_lexem(ltype = LexemTypes.Constant, lex = float(self.__buffer), value = self.__buffer, description = f"float with value = {self.__buffer}")
                             self.__is_float = False
 
                         else:
-                            self.__add_lexem(LexemTypes.Constant, int(self.__buffer), f"int with value = {self.__buffer}")
+                            self.__add_lexem(ltype = LexemTypes.Constant, lex = int(self.__buffer), value = self.__buffer, description = f"int with value = {self.__buffer}")
                         
                         self.__state = LexemProcessorStates.Idle
                     
@@ -134,24 +135,24 @@ class LexicalProcessor:
                         search_comparison = self.search_in_comparison_dictionary()
 
                         if search_delimeter[0] != -1:
-                            self.__add_lexem(LexemTypes.Delimeter, search_delimeter[0], search_delimeter[1])
+                            self.__add_lexem(ltype = LexemTypes.Delimeter, lex = search_delimeter[0], value = search_delimeter[1])
                             self.__state = LexemProcessorStates.Idle
                             self.__clear_buffer()
                         
                         elif search_operation[0] != -1:
-                            self.__add_lexem(LexemTypes.Operation, search_operation[0], search_operation[1])
+                            self.__add_lexem(ltype = LexemTypes.Operation, lex = search_operation[0], value = search_operation[1])
                             self.__state = LexemProcessorStates.Idle
                             self.__clear_buffer()
                             self.__get_next_char()
 
                         elif search_comparison[0] != -1:
-                            self.__add_lexem(LexemTypes.Comparison, search_comparison[0], search_comparison[1])
+                            self.__add_lexem(ltype = LexemTypes.Comparison, lex = search_comparison[0], value = search_comparison[1])
                             self.__state = LexemProcessorStates.Idle
                             self.__clear_buffer()
                             self.__get_next_char()
                         
                         else:
-                            self.__add_lexem(LexemTypes.ParsingError, -1, f"Ошибка на символе №{self.__pointer}: Не возможно прочитать {self.__buffer}!")
+                            self.__add_lexem(ltype = LexemTypes.ParsingError, lex = -1, value = "-1", description = f"Ошибка на символе №{self.__pointer}: Не возможно прочитать {self.__buffer}!")
                             self.__state = LexemProcessorStates.Error
                             self.__error = f"Ошибка на символе №{self.__pointer}: Не возможно прочитать {self.__buffer}!"
                     
@@ -211,8 +212,11 @@ class LexicalProcessor:
     def __add_to_buffer(self, input):
         self.__buffer += input
 
-    def __add_lexem(self, ltype: LexemTypes, value: int, lex: str):
-        self.__lexems.append(Lexem(ltype = ltype, lex = lex, value = value))
+    def __add_lexem(self, ltype: LexemTypes, value: int, lex: str, description: str = None):
+        if description is None:
+            self.__lexems.append(Lexem(ltype = ltype, lex = lex, value = value))
+        else:
+            self.__lexems.append(Lexem(ltype = ltype, lex = lex, value = value, description = description))
 
     def __read_file(self, file: str):
         with open(file, 'r', encoding='utf-8') as f:

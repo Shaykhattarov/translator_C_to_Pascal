@@ -1,0 +1,1 @@
+SAVE_INTERMEDIATE_DATA_DIR: str = "E:/Study/Системы программного обеспечения/Лабораторная работа №1/Программа/data/intermediate/"

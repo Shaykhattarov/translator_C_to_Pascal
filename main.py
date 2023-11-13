@@ -2,8 +2,8 @@ from modules.lexical.output import LexicalAnalyzer
 
 
 class Translator:
-    inputfilepath: str = "E:/Study/Системы программного обеспечения/Лабораторная работа №1/Программа(1)/data/input/main.cpp"
-    outputfilepath: str = "E:/Study/Системы программного обеспечения/Лабораторная работа №1/Программа(1)/data/output/main.pas"
+    inputfilepath: str = "E:/Study/Системы программного обеспечения/Лабораторная работа №1/Программа/data/input/main.cpp"
+    outputfilepath: str = "E:/Study/Системы программного обеспечения/Лабораторная работа №1/Программа/data/output/main.pas"
 
     def __init__(self):
         result: list = self.lexical_processor()

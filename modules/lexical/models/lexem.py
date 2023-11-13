@@ -5,14 +5,20 @@ class Lexem:
     type: LexemTypes
     lex: int
     value: str
+    description: str
 
-    def __init__(self, ltype: LexemTypes, lex, value) -> None:
+    def __init__(self, ltype: LexemTypes, lex, value, description: str = None) -> None:
         self.type = ltype
         self.lex = lex
         self.value = value
+        self.description = description
+        
 
     def to_string(self):
-        return f"lexem type: {self.type};\t lexem id: {self.lex};\t lexem value: {self.value}"
+        if self.description is not None:
+            return f"Lexem type: <{self.type}> \t Lexem constants id: <{self.lex}> \t Lexem value: <{self.value}> \t Lexem description: {self.description}"
+        else:
+            return  f"Lexem type: <{self.type}> \t Lexem constants id: <{self.lex}> \t Lexem value: <{self.value}>"
     
     def __repr__(self) -> str:
         return f"<Lexem {self.type} - {self.lex}>"

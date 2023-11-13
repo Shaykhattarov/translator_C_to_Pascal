@@ -1,9 +1,6 @@
+float counter = 1.2; 
+string stroke = ";laksd;lasd"; 
 
-int main() {
-    float counter = 1.2;
-    string stroke = ";laksd;lasd";
-
-    while (counter == -10) {
-        counter = counter - 1;
-    }
+while (counter == 10) { 
+    counter = counter - 1; 
 }
