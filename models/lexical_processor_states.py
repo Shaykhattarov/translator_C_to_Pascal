@@ -1,6 +1,6 @@
 
 
-class LexemProcessorStates:
+class LexicalProcessorStates:
     Idle: int = 1
     ReadingNum: int = 2
     Delimeter: int = 3

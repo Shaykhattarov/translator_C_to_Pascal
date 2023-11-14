@@ -1,1 +1,1 @@
-SAVE_INTERMEDIATE_DATA_DIR: str = "E:/Study/Системы программного обеспечения/Лабораторная работа №1/Программа/data/intermediate/"
+INPUT_FILE: str = "E:\Study\Системы программного обеспечения\Лабораторная работа №1\Программа(test)\data\input\main.cpp"
