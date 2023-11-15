@@ -1,1 +1,1 @@
-INPUT_FILE: str = "E:\Study\Системы программного обеспечения\Лабораторная работа №1\Программа(test)\data\input\main.cpp"
+INPUT_FILE: str = "E:\Study\Системы программного обеспечения\Лабораторная работа №1\Программа\data\input\main.c"

@@ -1,9 +1,10 @@
+from typing import Union
 from models.lexical_processor_states import LexicalProcessorStates
 from models.word import Word
+from models.type import Type
 from models.token import Token
-from models import Num, Real
+from models import Integer, Float
 from constants.tag import Tag
-from constants.words import Words
 from constants.types import Types
 
 
@@ -19,14 +20,25 @@ class LexicalProcessor:
     __is_float: bool = False
 
     def __init__(self) -> None:
-        self.__reserve(Word("++", Tag.INC))
-        self.__reserve(Word("--", Tag.DIC))
+        self.__reserve(Word("{", Tag.OP_BRACES))
+        self.__reserve(Word("}", Tag.CL_BRACES))
+        self.__reserve(Word("(", Tag.OP_PARENTHESES))
+        self.__reserve(Word(")", Tag.CL_PARENTHESES))
+        self.__reserve(Word(";", Tag.EOS))
+        self.__reserve(Word("=", Tag.ASSIGN))
+        self.__reserve(Word("-", Tag.MINUS))
+        self.__reserve(Word("+", Tag.PLUS))
+        self.__reserve(Word("*", Tag.MULTI))
+        self.__reserve(Word("/", Tag.DIVIDE))
+        self.__reserve(Word("//", Tag.DIVIDE))
+        self.__reserve(Word("++", Tag.INCREMENT))
+        self.__reserve(Word("--", Tag.DECREMENT))
         self.__reserve(Word("&&", Tag.AND))
         self.__reserve(Word("||", Tag.OR))
-        self.__reserve(Word("==", Tag.EQ))
-        self.__reserve(Word("!=", Tag.NE))
-        self.__reserve(Word("<=", Tag.LE))
-        self.__reserve(Word(">=", Tag.GE))
+        self.__reserve(Word("==", Tag.EQUAL))
+        self.__reserve(Word("!=", Tag.NOT_EQUAL))
+        self.__reserve(Word("<=", Tag.LR_EQUAL))
+        self.__reserve(Word(">=", Tag.GR_EQUAL))
         self.__reserve(Word("true", Tag.TRUE))
         self.__reserve(Word("false", Tag.FALSE))
         self.__reserve(Word("if", Tag.IF))
@@ -35,8 +47,8 @@ class LexicalProcessor:
         self.__reserve(Word("do", Tag.DO))
         self.__reserve(Word("break", Tag.BREAK))
         self.__reserve(Word("if", Tag.IF))
-        self.__reserve(Words.true)
-        self.__reserve(Words.false)
+        self.__reserve(Word("false", Tag.FALSE))
+        self.__reserve(Word("true", Tag.TRUE))
         self.__reserve(Types.Int)
         self.__reserve(Types.Float)
         self.__reserve(Types.Char)
@@ -66,6 +78,7 @@ class LexicalProcessor:
                         self.__get_next_char()
 
                     elif self.__char in ["'", '"']:
+                        raise Exception("Литералы в данной версии лексического анализатора не поддерживаются")
                         self.__clear_buffer()
                         self.__add_to_buffer(input = self.__char)
                         self.__state = LexicalProcessorStates.ReadingLiteral
@@ -96,12 +109,12 @@ class LexicalProcessor:
                     
                     else:
                         if self.__is_float:
-                            self.__add_lexem(Real(float(self.__buffer)))
+                            self.__add_lexem(Float(float(self.__buffer)))
                             self.__clear_buffer()
                             self.__is_float = False
 
                         else:
-                            self.__add_lexem(Num(int(self.__buffer)))
+                            self.__add_lexem(Integer(int(self.__buffer)))
                             self.__clear_buffer()
                         
                         self.__state = LexicalProcessorStates.Idle
@@ -121,7 +134,7 @@ class LexicalProcessor:
                             self.__clear_buffer()
 
                         else:
-                            self.__add_lexem(Word(self.__buffer, Tag.ID))
+                            self.__add_lexem(Word(self.__buffer, Tag.IDENTIFIER))
                             self.__clear_buffer()
 
                         self.__state = LexicalProcessorStates.Idle
@@ -129,19 +142,31 @@ class LexicalProcessor:
                     continue
 
                 case LexicalProcessorStates.Delimeter:
-                    if self.__buffer + self.__char in self.__keywords.keys():
+                    if self.__buffer + self.__char in self.__keywords.keys() and self.__buffer not in ["(", ")", "{", "}"]:
                         self.__add_to_buffer(input = self.__char)
+                        
                         search_keyword = self.search_in_keywords_dictionary()
-                        self.__add_lexem(search_keyword)
-                        self.__clear_buffer()
-                        self.__get_next_char()
+                        if search_keyword is not None:
+                            self.__add_lexem(search_keyword)
+                            self.__clear_buffer()
+                            self.__get_next_char()
+                        else:
+                            token = Token(self.__buffer)
+                            self.__add_lexem(token)
+                            self.__clear_buffer()
 
                         self.__state = LexicalProcessorStates.Idle
                     
                     else:
-                        token = Token(self.__buffer)
-                        self.__add_lexem(token)
-                        self.__clear_buffer()
+                        search_keyword = self.search_in_keywords_dictionary()
+                        if search_keyword is not None:
+                           self.__add_lexem(search_keyword)
+                           self.__clear_buffer()
+                           self.__get_next_char() 
+                        else:
+                            token = Token(self.__buffer)
+                            self.__add_lexem(token)
+                            self.__clear_buffer()
 
                         self.__state = LexicalProcessorStates.Idle
                     
@@ -149,12 +174,12 @@ class LexicalProcessor:
 
                 case LexicalProcessorStates.Error:
                     self.__state = LexicalProcessorStates.Final
-                    print(self.__error)
+                    raise Exception(self.__error)
                     exit()
         
         return self.__lexems
 
-    def __reserve(self, word: Word):
+    def __reserve(self, word: Union[Word, Type]):
         self.__keywords[word.lexeme] = word 
 
     def __is_empty_or_next_line(self, input: str):

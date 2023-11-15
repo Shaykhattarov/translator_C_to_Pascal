@@ -1,25 +1,43 @@
 
 class Tag:
-    AND: int = 256
-    BASIC: int = 257
-    BREAK: int = 258
-    DO: int = 259
-    ELSE: int = 260
-    EQ: int = 261
-    FALSE: int = 262
-    GE: int = 263
-    ID: int = 264
-    IF: int = 265
-    INDEX: int = 266
-    LE: int = 267
-    MINUS: int = 268
-    NE: int = 269
-    NUM: int = 270
-    OR: int = 271
-    REAL: int = 272
-    TEMP: int = 273
-    TRUE: int = 274
-    WHILE: int = 275
-    INC: int = 276
-    DIC: int = 277
+    
+    
+    INT: str = "INTEGER"
+    FLOAT: str = "FLOAT"
+    CHAR: str = "CHAR"
+    BOOLEAN: str = "BOOLEAN"
+    ARRAY: str = "ARRAY"
+    IDENTIFIER: str = "IDENTIFIER"
+    
+    IF: str = "IF"
+    ELSE: str = "ELSE"  
+    FALSE: str = "FALSE"
+    TRUE: str = "TRUE"
+    AND: str = "AND"
+    OR: str = "OR"
+
+    EQUAL: str = "EQUAL"
+    GR_EQUAL: str = "GR_EQUAL"
+    LR_EQUAL: str = "LR_EQUAL"
+    NOT_EQUAL: str = "NOT_EQUAL"
+
+    BREAK: str = "BREAK"
+    DO: str = "DO"
+    
+    ASSIGN: str = "ASSIGN"
+    MINUS: str = "MINUS"
+    PLUS: str = "PLUS"
+    MULTI: str = "MULTI"
+    DIVIDE: str = "DIVIDE"
+    
+    WHILE: str = "WHILE"
+    INCREMENT: str = "INCREMENT"
+    DECREMENT: str = "DECREMENT"
+    EOS: str = "EOS"
+
+    OP_PARENTHESES: str = "OP_PARENTHESES"
+    CL_PARENTHESES: str = "CL_PARENTHESES"
+
+    OP_BRACES: str = "OP_BRASES"
+    CL_BRACES: str = "CL_BRACES"
 

@@ -1,12 +1,19 @@
 
 class Token:
-    tag: int
+    tag: str
+    length: str
+    value: int = None
 
-    def __init__(self, t: int):
+    def __init__(self, t: str):
         self.tag = t
+        self.length = len(f"{self.tag}")
     
     def to_string(self) -> str:
         return str(self.tag)
     
     def __repr__(self) -> str:
-        return "<Token {}>".format(self.tag)
+        if self.value is not None:
+            return f"<Token {self.tag} - {self.value}>"
+        else:
+            return f"<Token {self.tag}>"
+    
