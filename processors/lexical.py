@@ -79,10 +79,10 @@ class LexicalProcessor:
 
                     elif self.__char in ["'", '"']:
                         raise Exception("Литералы в данной версии лексического анализатора не поддерживаются")
-                        self.__clear_buffer()
-                        self.__add_to_buffer(input = self.__char)
-                        self.__state = LexicalProcessorStates.ReadingLiteral
-                        self.__get_next_char()
+                        # self.__clear_buffer()
+                        # self.__add_to_buffer(input = self.__char)
+                        # self.__state = LexicalProcessorStates.ReadingLiteral
+                        # self.__get_next_char()
                     
                     else:
                         self.__clear_buffer()
@@ -175,7 +175,6 @@ class LexicalProcessor:
                 case LexicalProcessorStates.Error:
                     self.__state = LexicalProcessorStates.Final
                     raise Exception(self.__error)
-                    exit()
         
         return self.__lexems
 
