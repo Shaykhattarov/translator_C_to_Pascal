@@ -1,10 +1,9 @@
-int main() {
-    float counter = 1.2; 
+float counter = 1.2; 
 
-    while (counter == -10) { 
-        counter = counter - 1; 
-        counter++;
-    }
+while (counter == -10) { 
+    counter = counter - 1; 
+    counter++;
 }
+
 
 

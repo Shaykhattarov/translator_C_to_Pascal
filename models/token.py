@@ -2,18 +2,14 @@
 class Token:
     tag: str
     length: str
-    value: int = None
+    lexeme: str 
 
-    def __init__(self, t: str):
-        self.tag = t
-        self.length = len(f"{self.tag}")
-    
-    def to_string(self) -> str:
-        return str(self.tag)
-    
-    def __repr__(self) -> str:
-        if self.value is not None:
-            return f"<Token {self.tag} - {self.value}>"
-        else:
-            return f"<Token {self.tag}>"
+    def __init__(self, lex: str, tag: int) -> None:
+        self.lexeme = lex
+        self.tag = tag
+        self.length = len(self.lexeme)
+
+    def __repr__(self):
+        return f"<Token {self.lexeme} - {self.tag} - {self.length}>"
+
     

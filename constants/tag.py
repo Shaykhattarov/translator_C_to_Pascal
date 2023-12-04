@@ -1,7 +1,5 @@
 
 class Tag:
-    
-    
     INT: str = "INTEGER"
     FLOAT: str = "FLOAT"
     CHAR: str = "CHAR"

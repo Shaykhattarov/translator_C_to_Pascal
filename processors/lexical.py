@@ -1,9 +1,6 @@
 from typing import Union
 from models.lexical_processor_states import LexicalProcessorStates
-from models.word import Word
-from models.type import Type
 from models.token import Token
-from models import Integer, Float
 from constants.tag import Tag
 from constants.types import Types
 
@@ -20,35 +17,35 @@ class LexicalProcessor:
     __is_float: bool = False
 
     def __init__(self) -> None:
-        self.__reserve(Word("{", Tag.OP_BRACES))
-        self.__reserve(Word("}", Tag.CL_BRACES))
-        self.__reserve(Word("(", Tag.OP_PARENTHESES))
-        self.__reserve(Word(")", Tag.CL_PARENTHESES))
-        self.__reserve(Word(";", Tag.EOS))
-        self.__reserve(Word("=", Tag.ASSIGN))
-        self.__reserve(Word("-", Tag.MINUS))
-        self.__reserve(Word("+", Tag.PLUS))
-        self.__reserve(Word("*", Tag.MULTI))
-        self.__reserve(Word("/", Tag.DIVIDE))
-        self.__reserve(Word("//", Tag.DIVIDE))
-        self.__reserve(Word("++", Tag.INCREMENT))
-        self.__reserve(Word("--", Tag.DECREMENT))
-        self.__reserve(Word("&&", Tag.AND))
-        self.__reserve(Word("||", Tag.OR))
-        self.__reserve(Word("==", Tag.EQUAL))
-        self.__reserve(Word("!=", Tag.NOT_EQUAL))
-        self.__reserve(Word("<=", Tag.LR_EQUAL))
-        self.__reserve(Word(">=", Tag.GR_EQUAL))
-        self.__reserve(Word("true", Tag.TRUE))
-        self.__reserve(Word("false", Tag.FALSE))
-        self.__reserve(Word("if", Tag.IF))
-        self.__reserve(Word("else", Tag.ELSE))
-        self.__reserve(Word("while", Tag.WHILE))
-        self.__reserve(Word("do", Tag.DO))
-        self.__reserve(Word("break", Tag.BREAK))
-        self.__reserve(Word("if", Tag.IF))
-        self.__reserve(Word("false", Tag.FALSE))
-        self.__reserve(Word("true", Tag.TRUE))
+        self.__reserve(Token("{", Tag.OP_BRACES))
+        self.__reserve(Token("}", Tag.CL_BRACES))
+        self.__reserve(Token("(", Tag.OP_PARENTHESES))
+        self.__reserve(Token(")", Tag.CL_PARENTHESES))
+        self.__reserve(Token(";", Tag.EOS))
+        self.__reserve(Token("=", Tag.ASSIGN))
+        self.__reserve(Token("-", Tag.MINUS))
+        self.__reserve(Token("+", Tag.PLUS))
+        self.__reserve(Token("*", Tag.MULTI))
+        self.__reserve(Token("/", Tag.DIVIDE))
+        self.__reserve(Token("//", Tag.DIVIDE))
+        self.__reserve(Token("++", Tag.INCREMENT))
+        self.__reserve(Token("--", Tag.DECREMENT))
+        self.__reserve(Token("&&", Tag.AND))
+        self.__reserve(Token("||", Tag.OR))
+        self.__reserve(Token("==", Tag.EQUAL))
+        self.__reserve(Token("!=", Tag.NOT_EQUAL))
+        self.__reserve(Token("<=", Tag.LR_EQUAL))
+        self.__reserve(Token(">=", Tag.GR_EQUAL))
+        self.__reserve(Token("true", Tag.TRUE))
+        self.__reserve(Token("false", Tag.FALSE))
+        self.__reserve(Token("if", Tag.IF))
+        self.__reserve(Token("else", Tag.ELSE))
+        self.__reserve(Token("while", Tag.WHILE))
+        self.__reserve(Token("do", Tag.DO))
+        self.__reserve(Token("break", Tag.BREAK))
+        self.__reserve(Token("if", Tag.IF))
+        self.__reserve(Token("false", Tag.FALSE))
+        self.__reserve(Token("true", Tag.TRUE))
         self.__reserve(Types.Int)
         self.__reserve(Types.Float)
         self.__reserve(Types.Char)
@@ -109,12 +106,12 @@ class LexicalProcessor:
                     
                     else:
                         if self.__is_float:
-                            self.__add_lexem(Float(float(self.__buffer)))
+                            self.__add_lexem(Token(lex=self.__buffer, tag=Tag.FLOAT))
                             self.__clear_buffer()
                             self.__is_float = False
 
                         else:
-                            self.__add_lexem(Integer(int(self.__buffer)))
+                            self.__add_lexem(Token(lex=self.__buffer, tag=Tag.INT))
                             self.__clear_buffer()
                         
                         self.__state = LexicalProcessorStates.Idle
@@ -134,7 +131,7 @@ class LexicalProcessor:
                             self.__clear_buffer()
 
                         else:
-                            self.__add_lexem(Word(self.__buffer, Tag.IDENTIFIER))
+                            self.__add_lexem(Token(lex=self.__buffer, tag=Tag.IDENTIFIER))
                             self.__clear_buffer()
 
                         self.__state = LexicalProcessorStates.Idle
@@ -151,7 +148,7 @@ class LexicalProcessor:
                             self.__clear_buffer()
                             self.__get_next_char()
                         else:
-                            token = Token(self.__buffer)
+                            token = Token(self.__buffer, tag=0)
                             self.__add_lexem(token)
                             self.__clear_buffer()
 
@@ -178,7 +175,7 @@ class LexicalProcessor:
         
         return self.__lexems
 
-    def __reserve(self, word: Union[Word, Type]):
+    def __reserve(self, word: Token):
         self.__keywords[word.lexeme] = word 
 
     def __is_empty_or_next_line(self, input: str):
