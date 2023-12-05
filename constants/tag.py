@@ -6,6 +6,8 @@ class Tag:
     BOOLEAN: str = "BOOLEAN"
     ARRAY: str = "ARRAY"
     IDENTIFIER: str = "IDENTIFIER"
+    CONSTANT: str = "CONSTANT"
+    UNKNOWN: str = "UNKNOWN"
     
     IF: str = "IF"
     ELSE: str = "ELSE"  
@@ -18,6 +20,9 @@ class Tag:
     GR_EQUAL: str = "GR_EQUAL"
     LR_EQUAL: str = "LR_EQUAL"
     NOT_EQUAL: str = "NOT_EQUAL"
+    GREATER: str = "GREATER"
+    LOWER: str = "LOWER"
+    COMMA: str = "COMMA"
 
     BREAK: str = "BREAK"
     DO: str = "DO"
@@ -27,6 +32,9 @@ class Tag:
     PLUS: str = "PLUS"
     MULTI: str = "MULTI"
     DIVIDE: str = "DIVIDE"
+
+    EMPTY: str = "EMPTY"
+    NONE: str = "NONE"
     
     WHILE: str = "WHILE"
     INCREMENT: str = "INCREMENT"

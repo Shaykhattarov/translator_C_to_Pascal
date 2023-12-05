@@ -21,6 +21,8 @@ class LexicalProcessor:
         self.__reserve(Token("}", Tag.CL_BRACES))
         self.__reserve(Token("(", Tag.OP_PARENTHESES))
         self.__reserve(Token(")", Tag.CL_PARENTHESES))
+        self.__reserve(Token(">", Tag.GREATER))
+        self.__reserve(Token("<", Tag.LOWER))
         self.__reserve(Token(";", Tag.EOS))
         self.__reserve(Token("=", Tag.ASSIGN))
         self.__reserve(Token("-", Tag.MINUS))
@@ -56,8 +58,11 @@ class LexicalProcessor:
         self.__filecontent = self.__readfile(filename = file)
         self.__char = self.__filecontent[self.__pointer]
 
-        while self.__state != LexicalProcessorStates.Final and self.__pointer < len(self.__filecontent) - 1:
+        while self.__state != LexicalProcessorStates.Final and self.__pointer < len(self.__filecontent) - 2:
             match self.__state:
+                case LexicalProcessorStates.Final:
+                    break
+
                 case LexicalProcessorStates.Idle:
                     if self.__is_empty_or_next_line(input = self.__char):
                         self.__get_next_char()
@@ -106,12 +111,12 @@ class LexicalProcessor:
                     
                     else:
                         if self.__is_float:
-                            self.__add_lexem(Token(lex=self.__buffer, tag=Tag.FLOAT))
+                            self.__add_lexem(Token(lex=self.__buffer, tag=Tag.CONSTANT))
                             self.__clear_buffer()
                             self.__is_float = False
 
                         else:
-                            self.__add_lexem(Token(lex=self.__buffer, tag=Tag.INT))
+                            self.__add_lexem(Token(lex=self.__buffer, tag=Tag.CONSTANT))
                             self.__clear_buffer()
                         
                         self.__state = LexicalProcessorStates.Idle
@@ -148,7 +153,7 @@ class LexicalProcessor:
                             self.__clear_buffer()
                             self.__get_next_char()
                         else:
-                            token = Token(self.__buffer, tag=0)
+                            token = Token(self.__buffer, Tag.UNKNOWN)
                             self.__add_lexem(token)
                             self.__clear_buffer()
 
@@ -159,7 +164,6 @@ class LexicalProcessor:
                         if search_keyword is not None:
                            self.__add_lexem(search_keyword)
                            self.__clear_buffer()
-                           self.__get_next_char() 
                         else:
                             token = Token(self.__buffer)
                             self.__add_lexem(token)
@@ -182,6 +186,8 @@ class LexicalProcessor:
         return input == ' ' or input == '\n' or input == '\t' or input == '\0' or input == '\r'
 
     def __get_next_char(self):
+        if self.__pointer == len(self.__filecontent):
+            self.__state = LexicalProcessorStates.Error
         self.__pointer += 1
         self.__char = self.__filecontent[self.__pointer]
 

@@ -4,7 +4,7 @@ class Token:
     length: str
     lexeme: str 
 
-    def __init__(self, lex: str, tag: int) -> None:
+    def __init__(self, lex: str, tag: str) -> None:
         self.lexeme = lex
         self.tag = tag
         self.length = len(self.lexeme)

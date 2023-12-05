@@ -1,5 +1,9 @@
 
 
+TREE_NODE_TYPE_MNEMONIC = ["UNKNOWN", "MODULE", "CONSTANT", "TYPE", "SYMBOL", "UNARY_OP", "BINARY_OP", "CALL",
+        "FUNCTION", "BLOCK", "ASSIGNMENT", "IF_ELSE", "WHILE", "RETURN", "BREAK"]
+
+
 class TreeNodeType:
     UNKNOWN: int = 0
     MODULE: int = 1
