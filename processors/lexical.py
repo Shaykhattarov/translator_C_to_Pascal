@@ -208,4 +208,6 @@ class LexicalProcessor:
 
     def __readfile(self, filename: str):
         with open(filename, 'r', encoding='utf-8') as file:
-            return file.read()
+            data = file.read()
+            data += "  "
+            return data
