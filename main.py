@@ -5,7 +5,6 @@ import config
 class Main:
 
     def __init__(self) -> None:
-        self.__lexical_processor()
         self.run()
 
     def run(self):

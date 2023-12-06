@@ -58,7 +58,7 @@ class LexicalProcessor:
         self.__filecontent = self.__readfile(filename = file)
         self.__char = self.__filecontent[self.__pointer]
 
-        while self.__state != LexicalProcessorStates.Final and self.__pointer < len(self.__filecontent) - 2:
+        while self.__state != LexicalProcessorStates.Final and self.__pointer < len(self.__filecontent) - 1:
             match self.__state:
                 case LexicalProcessorStates.Final:
                     break
@@ -165,7 +165,7 @@ class LexicalProcessor:
                            self.__add_lexem(search_keyword)
                            self.__clear_buffer()
                         else:
-                            token = Token(self.__buffer)
+                            token = Token(self.__buffer, Tag.UNKNOWN)
                             self.__add_lexem(token)
                             self.__clear_buffer()
 
@@ -186,8 +186,8 @@ class LexicalProcessor:
         return input == ' ' or input == '\n' or input == '\t' or input == '\0' or input == '\r'
 
     def __get_next_char(self):
-        if self.__pointer == len(self.__filecontent):
-            self.__state = LexicalProcessorStates.Error
+        #if self.__pointer == len(self.__filecontent):
+        #    self.__state = LexicalProcessorStates.Error
         self.__pointer += 1
         self.__char = self.__filecontent[self.__pointer]
 
