@@ -2,7 +2,6 @@ from typing import Union
 from models.lexical_processor_states import LexicalProcessorStates
 from models.token import Token
 from constants.tag import Tag
-from constants.types import Types
 
 
 class LexicalProcessor:
@@ -48,11 +47,11 @@ class LexicalProcessor:
         self.__reserve(Token("if", Tag.IF))
         self.__reserve(Token("false", Tag.FALSE))
         self.__reserve(Token("true", Tag.TRUE))
-        self.__reserve(Types.Int)
-        self.__reserve(Types.Float)
-        self.__reserve(Types.Char)
-        self.__reserve(Types.Array)
-        self.__reserve(Types.Bool)
+        self.__reserve(Token("int", Tag.INT))
+        self.__reserve(Token("float", Tag.FLOAT))
+        self.__reserve(Token("char", Tag.CHAR))
+        self.__reserve(Token("bool", Tag.BOOLEAN))
+        self.__reserve(Token("arr", Tag.ARRAY))
 
     def process_file(self, file: str):
         self.__filecontent = self.__readfile(filename = file)
