@@ -9,13 +9,16 @@ class TreeNode:
     nodetype: TreeNodeType
     scope: SymbolTable
     token: Token
-    symbols: SymbolTable = None
+    symbols: SymbolTable
 
     def __init__(self, token: Token, nodetype: TreeNodeType, scope: SymbolTable) -> None:
         self.parent = None
         self.token = token
         self.nodetype = nodetype
         self.scope = scope
+        self.childs = []
+        self.set_symbol_table(scope)
+        #print(f"Создана нода: \n\tРодитель: {self.parent}; \n\tТокен: {self.token};\n\tТип ноды: {self.nodetype};\n\tТаблица символов ноды: {self.scope};\n\tСимволы: {self.symbols};")
 
     def __repr__(self) -> str:
         return f"<TreeNode {self.token} - {self.nodetype} - {self.scope}>"
@@ -27,10 +30,10 @@ class TreeNode:
         if node is None: return None
         node.parent = self
         self.childs.append(node)
+        #print(f"Добавлена нода: \n\tРодитель: {node.parent}; \n\tТокен: {node.token};\n\tТип ноды: {node.nodetype};\n\tТаблица символов ноды: {node.scope};\n\tСимволы: {node.childs};")
         return node
 
     def remove_all(self):
-        child_count = len(self.childs)
         self.childs = []
 
     def remove_child(self, node) -> bool:
@@ -62,6 +65,9 @@ class TreeNode:
     def set_symbol_table(self, scope: SymbolTable):
         self.symbols = scope
     
+    def get_symbol_table(self):
+        return self.symbols
+    
     def get_depth(self) -> int:
         depth: int = 0
         node = self.get_parent()
@@ -82,8 +88,9 @@ class TreeNode:
                 else:
                     print("|-", end="")
             print("'", end="")
-            print(f"{self.token.lexeme} - {self.token.length}", end="")
+            print(f"{self.token.lexeme}", end="")
             print("'", "(", TREE_NODE_TYPE_MNEMONIC[int(self.nodetype)], ")", end="")
-            print(" ", self.scope.name)
+            print(" ", self.symbols.name)
             for node in self.childs:
                 node.print_node(tab + 1)
+            

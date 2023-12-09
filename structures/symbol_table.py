@@ -120,6 +120,7 @@ class SymbolTable:
             
             print()
         
-        for i in range(len(self.childs)):
-            self.childs[i].print_recursive(depth + 1)
+        for node in self.childs:
+            self.childs.remove(node)
+            node.print_recursive(depth + 1)
 

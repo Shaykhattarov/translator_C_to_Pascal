@@ -7,7 +7,7 @@ from structures.tree_node_type import TreeNodeType
 
 class SyntacticalProcessor:
     __lexems: list[Token]
-    __root_tree: TreeNode
+    root: TreeNode
     __root_symbol_table: SymbolTable = SymbolTable(name="GLOBAL")
     __token_pointer: int = 0
     __block_counter: int = 0 
@@ -15,8 +15,13 @@ class SyntacticalProcessor:
 
     def __init__(self, lexems) -> None:
         self.__lexems = lexems
-        #self.build_syntax_tree()
+        self.build_syntax_tree()
         
+    def get_symbol_table(self):
+        return self.__root_symbol_table
+    
+    def get_syntax_tree(self):
+        return self.root
 
     def build_syntax_tree(self):
         # add iput system function to symbols table (write int to std out)
@@ -33,8 +38,12 @@ class SyntacticalProcessor:
         if symbol: 
             symbol.arg_count = 1
 
-        self.__root_tree: TreeNode = self.parse_module(self.__root_symbol_table)
+        self.root: TreeNode = self.parse_module(self.__root_symbol_table)
+        self.root.print_node()
+        self.root.print_node(0)
         
+
+
 
     #---------------------------------------------------------------------------
     # <module> ::= { <declaration> | <function> }*
@@ -48,12 +57,12 @@ class SyntacticalProcessor:
         else:
             raise Exception("Ожидалось объявление функции!")
         
-        while(self.next()):
-            function_check = self.get_token(self.__token_pointer + 2)
-            if function_check.tag == Tag.OP_PARENTHESES:
-                program.add_child(self.parse_function(scope))
-            else:
-                raise Exception("Ожидалось объявление функции!")
+        #while(self.next()):
+        #    function_check = self.get_token(self.__token_pointer + 2)
+        #    if function_check.tag == Tag.OP_PARENTHESES:
+        #        program.add_child(self.parse_function(scope))
+        #    else:
+        #        raise Exception("Ожидалось объявление функции!")
         return program
     
 
@@ -62,7 +71,7 @@ class SyntacticalProcessor:
     #---------------------------------------------------------------------------
     def parse_function(self, scope: SymbolTable):
         data_type: Token = self.get_token()
-        if not self.is_data_type(data_type.tag): raise Exception("Ожидался существующий тип токена!")
+        if not self.is_data_type(data_type.tag): raise Exception("Ожидался токен типа данных!")
         return_type: TreeNode = TreeNode(data_type, TreeNodeType.TYPE, scope)
         self.next()
         self.check_token(tokentag=Tag.IDENTIFIER)
@@ -73,17 +82,17 @@ class SyntacticalProcessor:
             self.next()
 
         funcname: str = f"{func.get_token.lexeme} - {func.get_token.length}"
-        block_symbol: SymbolTable = SymbolTable(funcname)
+        block_symbol: SymbolTable = SymbolTable(name = funcname)
         scope.add_child(block_symbol)
-        arguments: TreeNode = TreeNode(Token("", Tag.EMPTY), TreeNodeType.SYMBOL, block_symbol)
+        arguments: TreeNode = TreeNode(Token("Arguments", Tag.EMPTY), TreeNodeType.SYMBOL, block_symbol)
         while(self.next()):
             tkn: Token = self.get_token()
             if self.is_token_type(Tag.COMMA): 
                 self.next()
             elif self.is_token_type(Tag.CL_PARENTHESES):
                 break
-            elif not tkn.lexeme.isalpha() or not tkn.lexeme.isdigit():
-                raise Exception("Неожидаемый тип токена в аргументе функции!")
+            elif not tkn.lexeme.isalpha() and not tkn.lexeme.isdigit():
+                raise Exception("Неожидаемый тип токена в аргументах функции!")
             arguments.add_child(self.parse_arguments(block_symbol))
         self.next()
 
@@ -95,7 +104,7 @@ class SyntacticalProcessor:
         func.add_child(return_type)
         func.add_child(arguments)
         func.add_child(function_body)
-        
+
         return func
     
 
@@ -106,6 +115,7 @@ class SyntacticalProcessor:
         data_type: Token = self.get_token()
         if not self.is_data_type(data_type.tag):
             raise Exception("Ожидался агрумент функции")
+        
         argument: TreeNode = TreeNode(data_type, TreeNodeType.TYPE, scope)
         self.next()
         self.check_token(Tag.IDENTIFIER)
@@ -155,12 +165,15 @@ class SyntacticalProcessor:
             next_token: Token = self.get_next_token()
             if next_token.tag == Tag.ASSIGN:
                 return self.parse_assignment(scope)
-            if next_token.tag == Tag.OP_PARENTHESES:
-                call_node: TreeNode = self.parse_call(scope)
-                self.next()
-                if not self.is_token_type(Tag.EOS):
-                    raise Exception("';' ожидалось")
-                return call_node
+            # Не рабочая фича
+            #if next_token.tag == Tag.OP_PARENTHESES:
+            #    call_node: TreeNode = self.parse_call(scope)
+            #    self.next()
+            #    if not self.is_token_type(Tag.EOS):
+            #        raise Exception("';' ожидалось")
+            #    return call_node
+            elif next_token in [Tag.INCREMENT, Tag.DECREMENT]:
+                return self.parse_expression(scope)
             else:
                 raise Exception("Неожидаемый токен, ожидались равно '=' или вызов функции!")
         elif token.tag == Tag.IF: return self.parse_if_else(scope, while_block)
@@ -178,7 +191,7 @@ class SyntacticalProcessor:
         self.check_token(Tag.OP_PARENTHESES)
         self.next()
         while_block.add_child(self.parse_logical(scope))
-        print(self.get_token(), '[INFO]')
+        self.next()
         self.check_token(Tag.CL_PARENTHESES)
         self.next()
         while_block.add_child(self.parse_statement(scope, True))
@@ -243,8 +256,7 @@ class SyntacticalProcessor:
     # *  <logical>     ::= <comparison> {( && | '||') <comparison>}
     #---------------------------------------------------------------------------
     def parse_logical(self, scope: SymbolTable):
-        prev_op = None
-        op = None
+        prev_op = op = None
         operand1 = self.parse_comparison(scope)
         token: Token = self.get_token()
         while self.is_logical(token.tag):
@@ -258,6 +270,7 @@ class SyntacticalProcessor:
             op.add_child(operand2)
             prev_op = op
             token = self.get_token()
+            self.next()
         if op is None:
             return operand1
         else:
@@ -410,6 +423,14 @@ class SyntacticalProcessor:
                 self.next()
         else:
             raise Exception("Ожидались число или идентификатор!")
+        
+        if unary_minus:
+            expr: TreeNode = TreeNode(Token("-", Tag.MINUS), TreeNodeType.BINARY_OP, scope)
+            zero: TreeNode = TreeNode(Token("0", Tag.CONSTANT), TreeNodeType.CONSTANT, scope)
+            expr.add_child(zero)
+            expr.add_child(factor)
+            return expr
+
         
         return factor
 
