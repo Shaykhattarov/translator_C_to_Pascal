@@ -1,7 +1,9 @@
-int main(int a) { 
-    float counter; 
-    counter = 1.2;  
-    while (counter == -10) {  
-        counter = counter - 1;  
+int main() { 
+    float counter;
+    counter = -10;
+    while (counter >= 10) { 
+        int b; 
+        b = 2;
+        counter = counter - 2;  
     }
 }

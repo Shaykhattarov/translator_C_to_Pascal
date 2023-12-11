@@ -39,8 +39,7 @@ class SyntacticalProcessor:
             symbol.arg_count = 1
 
         self.root: TreeNode = self.parse_module(self.__root_symbol_table)
-        self.root.print_node()
-        self.root.print_node(0)
+
         
 
 
@@ -229,7 +228,7 @@ class SyntacticalProcessor:
             self.check_token(Tag.IDENTIFIER)
             variable_name: TreeNode = TreeNode(self.get_token(), TreeNodeType.SYMBOL, scope)
             if not scope.add_symbol(variable_name.get_token, SymbolType.VARIABLE):
-                raise Exception("Переменная уже инициализирована!")
+                raise Exception("Повторное объявление идентификаторов!")
             variable_declaration.add_child(variable_name)
         return variable_declaration
     
@@ -240,7 +239,7 @@ class SyntacticalProcessor:
     def parse_assignment(self, scope: SymbolTable):
         identifier: Token = self.get_token()
         if scope.look_up_symbol(identifier) is None:
-            raise Exception("Символ не известен")
+            raise Exception("Необъявленный идентификатор!")
         self.next()
         self.check_token(Tag.ASSIGN)
         op: TreeNode = TreeNode(self.get_token(), TreeNodeType.ASSIGNMENT, scope)
@@ -419,7 +418,7 @@ class SyntacticalProcessor:
             else:
                 factor = TreeNode(self.get_token(), TreeNodeType.SYMBOL, scope)
                 if scope.look_up_symbol(self.get_token()) is None:
-                    raise Exception("Символ неизвестен!")
+                    raise Exception("Необъявленный идентификатор!")
                 self.next()
         else:
             raise Exception("Ожидались число или идентификатор!")
@@ -430,10 +429,7 @@ class SyntacticalProcessor:
             expr.add_child(zero)
             expr.add_child(factor)
             return expr
-
-        
         return factor
-
 
     def get_token_count(self):
         return len(self.__lexems)
@@ -466,5 +462,9 @@ class SyntacticalProcessor:
         return self.get_token().tag == tokentag 
 
     def check_token(self, tokentag: Tag):
+        if not self.is_token_type(tokentag) and self.get_next_token().tag == Tag.IDENTIFIER:
+            raise Exception("Задано невозможное имя для идентификатора!")
+        
         if not self.is_token_type(tokentag):
-            raise Exception("Данного типа токена не существует!")    
+            raise Exception("Не ожидаемый токен! Или он не определен!")
+           
